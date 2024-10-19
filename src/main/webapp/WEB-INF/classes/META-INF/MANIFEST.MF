@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: timesheet2021
+Implementation-Version: 3.0
+Built-By: ASUS
+Implementation-Vendor-Id: tn.esprit.spring
+Build-Jdk: 1.8.0_60
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/timesheet2021
+Created-By: Maven Integration for Eclipse
+
