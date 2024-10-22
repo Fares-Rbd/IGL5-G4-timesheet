@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timesheet
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: timesheet
+  template:
+    metadata:
+      labels:
+        app: timesheet
+    spec:
+      containers:
+        - name: timesheet
+          image: seeef/timesheet:${BUILD_NUMBER}  # Use the image built in the pipeline
+          ports:
+            - containerPort: 9096
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql-service:3306/tpachat?createDatabaseIfNotExist=true
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
