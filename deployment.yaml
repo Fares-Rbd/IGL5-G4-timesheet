@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: timesheet
-          image: seeef/timesheet:${BUILD_NUMBER}  # Use the image built in the pipeline
+          image: "${springAppImage}"
           ports:
             - containerPort: 9096
           env:
