@@ -2,7 +2,7 @@
 variable "region" {
   description = "The AWS region to deploy the resources"
   type        = string
-  default     = "us-west-2"  # Adjust to your desired AWS region
+  default     = "us-east-1"  # Adjust to your desired AWS region
 }
 
 variable "ssh_key_name" {
