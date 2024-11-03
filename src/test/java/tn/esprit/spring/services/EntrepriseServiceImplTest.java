@@ -20,7 +20,7 @@ import tn.esprit.spring.repository.DepartementRepository;
 import tn.esprit.spring.repository.EntrepriseRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class EntrepriseServiceImplTest {
+ class EntrepriseServiceImplTest {
 
     @InjectMocks
     private EntrepriseServiceImpl entrepriseService;
@@ -35,7 +35,7 @@ public class EntrepriseServiceImplTest {
     private Departement departement;
 
     @BeforeEach
-    public void setUp() {
+     void setUp() {
         entreprise = new Entreprise();
         entreprise.setId(1);
         entreprise.setDepartements(new ArrayList<>());
@@ -47,7 +47,7 @@ public class EntrepriseServiceImplTest {
     }
 
     @Test
-    public void testAjouterEntreprise() {
+     void testAjouterEntreprise() {
         when(entrepriseRepoistory.save(any(Entreprise.class))).thenReturn(entreprise);
 
         int id = entrepriseService.ajouterEntreprise(entreprise);
@@ -57,7 +57,7 @@ public class EntrepriseServiceImplTest {
     }
 
     @Test
-    public void testAjouterDepartement() {
+     void testAjouterDepartement() {
         when(deptRepoistory.save(any(Departement.class))).thenReturn(departement);
 
         int id = entrepriseService.ajouterDepartement(departement);
@@ -67,7 +67,7 @@ public class EntrepriseServiceImplTest {
     }
 
     @Test
-    public void testAffecterDepartementAEntreprise() {
+     void testAffecterDepartementAEntreprise() {
         when(entrepriseRepoistory.findById(1)).thenReturn(Optional.of(entreprise));
         when(deptRepoistory.findById(1)).thenReturn(Optional.of(departement));
 
@@ -78,7 +78,7 @@ public class EntrepriseServiceImplTest {
     }
 
     @Test
-    public void testGetAllDepartementsNamesByEntreprise() {
+     void testGetAllDepartementsNamesByEntreprise() {
         List<Departement> departements = new ArrayList<>();
         departements.add(departement);
         entreprise.setDepartements(departements);
@@ -91,21 +91,21 @@ public class EntrepriseServiceImplTest {
     }
 
     @Test
-    public void testDeleteEntrepriseById() {
+     void testDeleteEntrepriseById() {
         when(entrepriseRepoistory.findById(1)).thenReturn(Optional.of(entreprise));
         entrepriseService.deleteEntrepriseById(1);
         verify(entrepriseRepoistory, times(1)).delete(entreprise);
     }
 
     @Test
-    public void testDeleteDepartementById() {
+     void testDeleteDepartementById() {
         when(deptRepoistory.findById(1)).thenReturn(Optional.of(departement));
         entrepriseService.deleteDepartementById(1);
         verify(deptRepoistory, times(1)).delete(departement);
     }
 
     @Test
-    public void testGetEntrepriseById() {
+     void testGetEntrepriseById() {
         when(entrepriseRepoistory.findById(1)).thenReturn(Optional.of(entreprise));
         Entreprise foundEntreprise = entrepriseService.getEntrepriseById(1);
         assertEquals(entreprise, foundEntreprise);
