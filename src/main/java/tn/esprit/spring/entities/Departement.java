@@ -1,6 +1,7 @@
 package tn.esprit.spring.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -28,7 +29,7 @@ public class Departement implements Serializable {
 	//@JsonManagedReference 
 	@JsonIgnore
 	@ManyToMany
-	private List<Employe> employes;
+	private List<Employe> employes = new ArrayList<>();
 	
 	@OneToMany(mappedBy="departement")
 	private List<Mission> missions;

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: timesheet
-          image: "${springAppImage}" # Corrected image name
+          image: "${springAppImage}"
           ports:
             - containerPort: 9096
           env:
