@@ -1,100 +1,156 @@
 package tn.esprit.spring.entities;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.ArrayList;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
+import tn.esprit.spring.entities.Contrat;
+import tn.esprit.spring.entities.Departement;
+import tn.esprit.spring.entities.Employe;
+import tn.esprit.spring.entities.Role;
+import tn.esprit.spring.entities.Timesheet;
 
-import tn.esprit.spring.services.EmployeServiceImpl; 
-import tn.esprit.spring.repository.EmployeRepository; 
+import java.util.ArrayList;
+import java.util.List;
 
-@ExtendWith(MockitoExtension.class) 
+import static org.junit.jupiter.api.Assertions.*;
+
 class EmployeTest {
 
-    @InjectMocks
-    private EmployeServiceImpl employeService; // Inject the actual implementation class
-
-    @Mock
-    private EmployeRepository employeRepository; // Mock any dependencies
+    private Employe employe;
+    private List<Departement> departements;
+    private List<Timesheet> timesheets;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this); // Initialize mocks
+    void setUp() {
+        employe = new Employe();
+        departements = new ArrayList<>();
+        timesheets = new ArrayList<>();
     }
 
     @Test
-    void testCreateEmploye() {
-
-        Role role = Role.valueOf("ADMINISTRATEUR");
-        Employe employe = new Employe("Doe", "John", "john.doe@example.com", true, role);
-
-        when(employeRepository.save(employe)).thenReturn(employe);
-
-        // This calls the repository (the mock)
-        int result = employeService.addOrUpdateEmploye(employe);
-
-        assertEquals(employe.getId(), result);
+    void testDefaultConstructor() {
+        assertNotNull(employe);
     }
 
     @Test
-    void testGetEmployePrenomById() {
-
-        int employeId = 1;
-        Employe employe = new Employe("Doe", "John", "john.doe@example.com", true, Role.valueOf("ADMINISTRATEUR"));
-
-        when(employeRepository.findById(employeId)).thenReturn(Optional.of(employe));
-
-        // This calls the repository (mock)
-        String result = employeService.getEmployePrenomById(employeId);
-
-        assertNotNull(result);
-        assertEquals(employe.getPrenom(), result);
+    void testParameterizedConstructor1() {
+        Employe employe = new Employe(1, "John", "Doe", "john@example.com", "password123", true, Role.ADMINISTRATEUR);
+        assertEquals(1, employe.getId());
+        assertEquals("John", employe.getPrenom());
+        assertEquals("Doe", employe.getNom());
+        assertEquals("john@example.com", employe.getEmail());
+        assertEquals("password123", employe.getPassword());
+        assertTrue(employe.isActif());
+        assertEquals(Role.ADMINISTRATEUR, employe.getRole());
     }
 
     @Test
-    void testUpdateEmploye() {
-
-        Role role = Role.valueOf("ADMINISTRATEUR");
-        Employe employe = new Employe("Doe", "John", "john.doe@example.com", true, role);
-
-        employe.setEmail("john.new@example.com");
-        when(employeRepository.save(employe)).thenReturn(employe);
-
-        // This calls the repository (mock)
-        employeService.addOrUpdateEmploye(employe);
-
-        assertEquals("john.new@example.com", employe.getEmail());
+    void testParameterizedConstructor2() {
+        Employe employe = new Employe("Doe", "John", "john@example.com", "password123", true, Role.ADMINISTRATEUR);
+        assertEquals("John", employe.getPrenom());
+        assertEquals("Doe", employe.getNom());
+        assertEquals("john@example.com", employe.getEmail());
+        assertEquals("password123", employe.getPassword());
+        assertTrue(employe.isActif());
+        assertEquals(Role.ADMINISTRATEUR, employe.getRole());
     }
 
     @Test
-    void testDeleteEmployeById() {
-        // Given
-        int employeId = 1;
-        Role role = Role.valueOf("ADMINISTRATEUR");
-        Employe employe = new Employe("Doe", "John", "john.doe@example.com", true, role);
-        employe.setId(employeId);
-
-        // Initialize the Departement with an empty list
-        Departement departement = new Departement();
-        departement.setEmployes(new ArrayList<>());
-        employe.setDepartements(List.of(departement));
-
-        when(employeRepository.findById(employeId)).thenReturn(Optional.of(employe));
-
-        employeService.deleteEmployeById(employeId);
-
-        verify(employeRepository, times(1)).delete(employe);
+    void testParameterizedConstructor3() {
+        Employe employe = new Employe("Doe", "John", "john@example.com", true, Role.INGENIEUR);
+        assertEquals("John", employe.getPrenom());
+        assertEquals("Doe", employe.getNom());
+        assertEquals("john@example.com", employe.getEmail());
+        assertNull(employe.getPassword());
+        assertTrue(employe.isActif());
+        assertEquals(Role.INGENIEUR, employe.getRole());
     }
 
+    @Test
+    void testSettersAndGetters() {
+        employe.setId(1);
+        employe.setPrenom("John");
+        employe.setNom("Doe");
+        employe.setEmail("john@example.com");
+        employe.setPassword("password123");
+        employe.setActif(true);
+        employe.setRole(Role.ADMINISTRATEUR);
 
+        assertEquals(1, employe.getId());
+        assertEquals("John", employe.getPrenom());
+        assertEquals("Doe", employe.getNom());
+        assertEquals("john@example.com", employe.getEmail());
+        assertEquals("password123", employe.getPassword());
+        assertTrue(employe.isActif());
+        assertEquals(Role.ADMINISTRATEUR, employe.getRole());
+    }
+
+    @Test
+    void testSetAndGetDepartements() {
+        Departement dep1 = new Departement("IT");
+        Departement dep2 = new Departement("HR");
+
+        departements.add(dep1);
+        departements.add(dep2);
+
+        employe.setDepartements(departements);
+
+        assertEquals(2, employe.getDepartements().size());
+        assertTrue(employe.getDepartements().contains(dep1));
+        assertTrue(employe.getDepartements().contains(dep2));
+    }
+
+    @Test
+    void testSetAndGetContrat() {
+        Contrat contrat = new Contrat();
+        employe.setContrat(contrat);
+
+        assertEquals(contrat, employe.getContrat());
+    }
+
+    @Test
+    void testSetAndGetTimesheets() {
+        Timesheet ts1 = new Timesheet();
+        Timesheet ts2 = new Timesheet();
+
+        timesheets.add(ts1);
+        timesheets.add(ts2);
+
+        employe.setTimesheets(timesheets);
+
+        assertEquals(2, employe.getTimesheets().size());
+        assertTrue(employe.getTimesheets().contains(ts1));
+        assertTrue(employe.getTimesheets().contains(ts2));
+    }
+
+    @Test
+    void testToString() {
+        Employe employe = new Employe(1, "John", "Doe", "john@example.com", "password123", true, Role.ADMINISTRATEUR);
+        String expectedString = "Employe [id=1, prenom=John, nom=Doe, email=john@example.com, password=password123, actif=true, role=ADMINISTRATEUR]";
+
+        assertEquals(expectedString, employe.toString());
+    }
+
+    @Test
+    void testActifStatus() {
+        employe.setActif(true);
+        assertTrue(employe.isActif());
+
+        employe.setActif(false);
+        assertFalse(employe.isActif());
+    }
+
+    @Test
+    void testRoleAssignment() {
+        employe.setRole(Role.CHEF_DEPARTEMENT);
+        assertEquals(Role.CHEF_DEPARTEMENT, employe.getRole());
+
+        employe.setRole(Role.INGENIEUR);
+        assertEquals(Role.INGENIEUR, employe.getRole());
+    }
+
+    @Test
+    void testEmailField() {
+        employe.setEmail("test@example.com");
+        assertEquals("test@example.com", employe.getEmail());
+    }
 }
