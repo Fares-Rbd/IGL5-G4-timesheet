@@ -1,6 +1,7 @@
 package tn.esprit.spring.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -45,7 +46,7 @@ public class Employe implements Serializable {
 	@JsonIgnore
 	@ManyToMany(mappedBy="employes",fetch=FetchType.EAGER )
 	//@NotNull
-	private List<Departement> departements;
+	private List<Departement> departements =new ArrayList<>();
 	@JsonIgnore
 	//@JsonBackReference
 	@OneToOne(mappedBy="employe")
