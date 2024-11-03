@@ -29,7 +29,7 @@ import tn.esprit.spring.repository.MissionRepository;
 import tn.esprit.spring.repository.TimesheetRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class TimesheetServiceImplTest {
+ class TimesheetServiceImplTest {
 
     @InjectMocks
     private TimesheetServiceImpl timesheetService;
@@ -55,7 +55,7 @@ public class TimesheetServiceImplTest {
     private Date dateFin;
 
     @BeforeEach
-    public void setUp() throws ParseException {
+     void setUp() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         dateDebut = sdf.parse("01/01/2024");
         dateFin = sdf.parse("02/01/2024");
@@ -83,7 +83,7 @@ public class TimesheetServiceImplTest {
     }
 
     @Test
-    public void testAjouterMission() {
+     void testAjouterMission() {
         when(missionRepository.save(any(Mission.class))).thenReturn(mission);
 
         int missionId = timesheetService.ajouterMission(mission);
@@ -93,7 +93,7 @@ public class TimesheetServiceImplTest {
     }
 
     @Test
-    public void testAffecterMissionADepartement() {
+     void testAffecterMissionADepartement() {
         when(missionRepository.findById(1)).thenReturn(Optional.of(mission));
         when(departementRepository.findById(1)).thenReturn(Optional.of(departement));
 
@@ -104,7 +104,7 @@ public class TimesheetServiceImplTest {
     }
 
     @Test
-    public void testAjouterTimesheet() {
+     void testAjouterTimesheet() {
         when(timesheetRepository.save(any(Timesheet.class))).thenReturn(timesheet);
 
         timesheetService.ajouterTimesheet(1, 1, dateDebut, dateFin);
@@ -113,7 +113,7 @@ public class TimesheetServiceImplTest {
     }
 
     @Test
-    public void testValiderTimesheetAsValidateur() {
+     void testValiderTimesheetAsValidateur() {
         when(employeRepository.findById(1)).thenReturn(Optional.of(employe));
         when(missionRepository.findById(1)).thenReturn(Optional.of(mission));
         when(timesheetRepository.findBytimesheetPK(timesheetPK)).thenReturn(timesheet);
@@ -125,7 +125,7 @@ public class TimesheetServiceImplTest {
     }
 
     @Test
-    public void testValiderTimesheetAsNonChefDepartement() {
+     void testValiderTimesheetAsNonChefDepartement() {
         employe.setRole(Role.ADMINISTRATEUR);
         when(employeRepository.findById(1)).thenReturn(Optional.of(employe));
         when(missionRepository.findById(1)).thenReturn(Optional.of(mission));
@@ -137,7 +137,7 @@ public class TimesheetServiceImplTest {
     }
 
     @Test
-    public void testFindAllMissionByEmployeJPQL() {
+     void testFindAllMissionByEmployeJPQL() {
         List<Mission> missions = new ArrayList<>();
         missions.add(mission);
 
@@ -150,7 +150,7 @@ public class TimesheetServiceImplTest {
     }
 
     @Test
-    public void testGetAllEmployeByMission() {
+     void testGetAllEmployeByMission() {
         List<Employe> employes = new ArrayList<>();
         employes.add(employe);
 
