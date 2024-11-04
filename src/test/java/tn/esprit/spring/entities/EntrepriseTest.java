@@ -37,8 +37,8 @@ class EntrepriseTest {
         tempEntreprise.setName("XYZ Inc");
         tempEntreprise.setRaisonSocial("SARL");
 
-        assertEquals("XYZ Inc", entreprise.getName());
-        assertEquals("SARL", entreprise.getRaisonSocial());
+        assertEquals("XYZ Inc", tempEntreprise.getName());
+        assertEquals("SARL", tempEntreprise.getRaisonSocial());
     }
 
     // 4. Test adding a Departement to the Entreprise
