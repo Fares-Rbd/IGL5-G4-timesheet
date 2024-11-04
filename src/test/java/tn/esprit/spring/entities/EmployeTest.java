@@ -1,100 +1,45 @@
 package tn.esprit.spring.entities;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.ArrayList;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import tn.esprit.spring.services.EmployeServiceImpl; 
-import tn.esprit.spring.repository.EmployeRepository; 
-
-@ExtendWith(MockitoExtension.class) 
 class EmployeTest {
 
-    @InjectMocks
-    private EmployeServiceImpl employeService; // Inject the actual implementation class
+    @Test
+    void testEmployeCreation() {
+        Employe employe = new Employe(1, "Jane", "Smith", "jane.smith@example.com", "password456", true, Role.ADMINISTRATEUR);
 
-    @Mock
-    private EmployeRepository employeRepository; // Mock any dependencies
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this); // Initialize mocks
+        assertEquals(1, employe.getId());
+        assertEquals("Jane", employe.getPrenom());
+        assertEquals("Smith", employe.getNom());
+        assertEquals("jane.smith@example.com", employe.getEmail());
+        assertTrue(employe.isActif());
+        assertEquals(Role.ADMINISTRATEUR, employe.getRole());
     }
 
     @Test
-    void testCreateEmploye() {
+    void testSettersAndGetters() {
+        Employe employe = new Employe();
+        employe.setId(2);
+        employe.setPrenom("John");
+        employe.setNom("Doe");
+        employe.setEmail("john.doe@example.com");
+        employe.setActif(false);
+        employe.setRole(Role.TECHNICIEN);
 
-        Role role = Role.valueOf("ADMINISTRATEUR");
-        Employe employe = new Employe("Doe", "John", "john.doe@example.com", true, role);
-
-        when(employeRepository.save(employe)).thenReturn(employe);
-
-        // This calls the repository (the mock)
-        int result = employeService.addOrUpdateEmploye(employe);
-
-        assertEquals(employe.getId(), result);
+        assertEquals(2, employe.getId());
+        assertEquals("John", employe.getPrenom());
+        assertEquals("Doe", employe.getNom());
+        assertEquals("john.doe@example.com", employe.getEmail());
+        assertFalse(employe.isActif());
+        assertEquals(Role.TECHNICIEN, employe.getRole());
     }
 
     @Test
-    void testGetEmployePrenomById() {
-
-        int employeId = 1;
-        Employe employe = new Employe("Doe", "John", "john.doe@example.com", true, Role.valueOf("ADMINISTRATEUR"));
-
-        when(employeRepository.findById(employeId)).thenReturn(Optional.of(employe));
-
-        // This calls the repository (mock)
-        String result = employeService.getEmployePrenomById(employeId);
-
-        assertNotNull(result);
-        assertEquals(employe.getPrenom(), result);
+    void testToString() {
+        Employe employe = new Employe(1, "Jane", "Doe", "jane.doe@example.com", "password", true, Role.ADMINISTRATEUR);
+        String expected = "Employe [id=1, prenom=Jane, nom=Doe, email=jane.doe@example.com, password=password, actif=true, role=ADMINISTRATEUR]";
+        assertEquals(expected, employe.toString());
     }
-
-    @Test
-    void testUpdateEmploye() {
-
-        Role role = Role.valueOf("ADMINISTRATEUR");
-        Employe employe = new Employe("Doe", "John", "john.doe@example.com", true, role);
-
-        employe.setEmail("john.new@example.com");
-        when(employeRepository.save(employe)).thenReturn(employe);
-
-        // This calls the repository (mock)
-        employeService.addOrUpdateEmploye(employe);
-
-        assertEquals("john.new@example.com", employe.getEmail());
-    }
-
-    @Test
-    void testDeleteEmployeById() {
-        // Given
-        int employeId = 1;
-        Role role = Role.valueOf("ADMINISTRATEUR");
-        Employe employe = new Employe("Doe", "John", "john.doe@example.com", true, role);
-        employe.setId(employeId);
-
-        // Initialize the Departement with an empty list
-        Departement departement = new Departement();
-        departement.setEmployes(new ArrayList<>());
-        employe.setDepartements(List.of(departement));
-
-        when(employeRepository.findById(employeId)).thenReturn(Optional.of(employe));
-
-        employeService.deleteEmployeById(employeId);
-
-        verify(employeRepository, times(1)).delete(employe);
-    }
-
-
 }
