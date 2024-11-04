@@ -21,14 +21,20 @@ import tn.esprit.spring.repository.TimesheetRepository;
 @Service
 public class EmployeServiceImpl implements IEmployeService {
 
+	private final EmployeRepository employeRepository;
+	private final DepartementRepository deptRepoistory;
+	private final ContratRepository contratRepoistory;
+	private final TimesheetRepository timesheetRepository;
+
+	private static final String EMPLOYE_NOT_FOUND = "Employe not found with id: ";
+
 	@Autowired
-	EmployeRepository employeRepository;
-	@Autowired
-	DepartementRepository deptRepoistory;
-	@Autowired
-	ContratRepository contratRepoistory;
-	@Autowired
-	TimesheetRepository timesheetRepository;
+	public EmployeServiceImpl(EmployeRepository employeRepository, DepartementRepository deptRepoistory, ContratRepository contratRepoistory, TimesheetRepository timesheetRepository) {
+		this.employeRepository = employeRepository;
+		this.deptRepoistory = deptRepoistory;
+		this.contratRepoistory = contratRepoistory;
+		this.timesheetRepository = timesheetRepository;
+	}
 
 	@Override
 	public Employe authenticate(String login, String password) {
@@ -43,34 +49,28 @@ public class EmployeServiceImpl implements IEmployeService {
 
 
 	public void mettreAjourEmailByEmployeId(String email, int employeId) {
-		Employe employe = employeRepository.findById(employeId).get();
-		employe.setEmail(email);
-		employeRepository.save(employe);
-
+		employeRepository.findById(employeId).ifPresent(employe -> {
+			employe.setEmail(email);
+			employeRepository.save(employe);
+		});
 	}
 
-	@Transactional	
+	@Transactional    
 	public void affecterEmployeADepartement(int employeId, int depId) {
-		Departement depManagedEntity = deptRepoistory.findById(depId).get();
-		Employe employeManagedEntity = employeRepository.findById(employeId).get();
+		Departement depManagedEntity = deptRepoistory.findById(depId)
+			.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
+		Employe employeManagedEntity = employeRepository.findById(employeId)
+			.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
 
-		
-			depManagedEntity.getEmployes().add(employeManagedEntity);
-
-		
-
+		depManagedEntity.getEmployes().add(employeManagedEntity);
 	}
+
 	@Transactional
-	public void desaffecterEmployeDuDepartement(int employeId, int depId)
-	{
-		Departement dep = deptRepoistory.findById(depId).get();
-		int employeNb = dep.getEmployes().size();
-		for(int index = 0; index < employeNb; index++){
-			if(dep.getEmployes().get(index).getId() == employeId){
-				dep.getEmployes().remove(index);
-				break;//a revoir
-			}
-		}
+	public void desaffecterEmployeDuDepartement(int employeId, int depId) {
+		Departement dep = deptRepoistory.findById(depId)
+			.orElseThrow(() -> new RuntimeException("Departement not found with id: " + depId));
+		
+		dep.getEmployes().removeIf(employe -> employe.getId() == employeId);
 	}
 
 	public int ajouterContrat(Contrat contrat) {
@@ -79,23 +79,27 @@ public class EmployeServiceImpl implements IEmployeService {
 	}
 
 	public void affecterContratAEmploye(int contratId, int employeId) {
-		Contrat contratManagedEntity = contratRepoistory.findById(contratId).get();
-		Employe employeManagedEntity = employeRepository.findById(employeId).get();
+		Contrat contratManagedEntity = contratRepoistory.findById(contratId)
+			.orElseThrow(() -> new RuntimeException("Contrat not found with id: " + contratId));
+		Employe employeManagedEntity = employeRepository.findById(employeId)
+			.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
 
 		contratManagedEntity.setEmploye(employeManagedEntity);
 		contratRepoistory.save(contratManagedEntity);
-
 	}
 
 	public String getEmployePrenomById(int employeId) {
-		Employe employeManagedEntity = employeRepository.findById(employeId).get();
-		return employeManagedEntity.getPrenom();
+		return employeRepository.findById(employeId)
+			.map(Employe::getPrenom)
+			.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
 	}
+
 	public void deleteEmployeById(int employeId)
 	{
-		Employe employe = employeRepository.findById(employeId).get();
+		 Employe employe = employeRepository.findById(employeId)
+		.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
 
-		//Desaffecter l'employe de tous les departements
+    	//Desaffecter l'employe de tous les departements
 		//c'est le bout master qui permet de mettre a jour
 		//la table d'association
 		for(Departement dep : employe.getDepartements()){
@@ -106,9 +110,9 @@ public class EmployeServiceImpl implements IEmployeService {
 	}
 
 	public void deleteContratById(int contratId) {
-		Contrat contratManagedEntity = contratRepoistory.findById(contratId).get();
+		Contrat contratManagedEntity = contratRepoistory.findById(contratId)
+			.orElseThrow(() -> new RuntimeException("Contrat not found with id: " + contratId));
 		contratRepoistory.delete(contratManagedEntity);
-
 	}
 
 	public int getNombreEmployeJPQL() {
