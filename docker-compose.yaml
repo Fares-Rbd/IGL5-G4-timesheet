@@ -15,7 +15,7 @@ services:
 
 
   spring_app:
-    #    image: timesheet:latest
+    image: ${SPRING_APP_IMAGE} #Declare this variable in the Jenkins pipeline
 
     build:
       context: .

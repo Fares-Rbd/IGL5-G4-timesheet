@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import tn.esprit.spring.dto.DepartementDTO;
+import tn.esprit.spring.dto.EntrepriseDTO;
 import tn.esprit.spring.entities.Departement;
 import tn.esprit.spring.entities.Entreprise;
 import tn.esprit.spring.services.IEmployeService;
@@ -21,15 +23,18 @@ import tn.esprit.spring.services.ITimesheetService;
 public class RestControlEntreprise {
 
 
+	private final IEntrepriseService ientrepriseservice;
+
 	@Autowired
-	IEmployeService iemployeservice;
-	@Autowired
-	IEntrepriseService ientrepriseservice;
-	@Autowired
-	ITimesheetService itimesheetservice;
+	public RestControlEntreprise(IEmployeService iemployeservice, IEntrepriseService ientrepriseservice, ITimesheetService itimesheetservice) {
+		this.ientrepriseservice = ientrepriseservice;
+	}
 
 	@PostMapping("/ajouterEntreprise")
-	public int ajouterEntreprise(@RequestBody Entreprise ssiiConsulting) {
+	public int ajouterEntreprise(@RequestBody EntrepriseDTO entrepriseDTO) {
+		Entreprise ssiiConsulting = new Entreprise();
+		ssiiConsulting.setName(entrepriseDTO.getName());
+		ssiiConsulting.setRaisonSocial(entrepriseDTO.getRaisonSocial());
 		ientrepriseservice.ajouterEntreprise(ssiiConsulting);
 		return ssiiConsulting.getId();
 	}
@@ -54,7 +59,9 @@ public class RestControlEntreprise {
 	}
 
 	@PostMapping("/ajouterDepartement")
-	public int ajouterDepartement(@RequestBody Departement dep) {
+	public int ajouterDepartement(@RequestBody DepartementDTO depDTO) {
+		Departement dep = new Departement();
+		dep.setName(depDTO.getName());
 		return ientrepriseservice.ajouterDepartement(dep);
 	}
 
