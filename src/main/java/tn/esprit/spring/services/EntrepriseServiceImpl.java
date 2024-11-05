@@ -83,8 +83,8 @@ public class EntrepriseServiceImpl implements IEntrepriseService {
 
 	public Entreprise getEntrepriseById(int entrepriseId) {
 		l.info("méthode: getEntrepriseById");
-		return entrepriseRepoistory.findById(entrepriseId).get();
-	
+		return entrepriseRepoistory.findById(entrepriseId)
+				.orElseThrow(() -> new RuntimeException(ENTREPRISE_NOT_FOUND + entrepriseId));
 	}
 
 }
