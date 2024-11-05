@@ -48,14 +48,10 @@ public class EmployeServiceImpl implements IEmployeService {
 
 
     public void mettreAjourEmailByEmployeId(String email, int employeId) {
-        if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Email must not be null or empty");
-        }
         Employe employe = employeRepository.findById(employeId)
                 .orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
         employe.setEmail(email);
         employeRepository.save(employe);
-
     }
 
     @Transactional
@@ -72,7 +68,6 @@ public class EmployeServiceImpl implements IEmployeService {
     public void desaffecterEmployeDuDepartement(int employeId, int depId) {
         Departement dep = deptRepoistory.findById(depId)
                 .orElseThrow(() -> new RuntimeException("Departement not found with id: " + depId));
-
         dep.getEmployes().removeIf(employe -> employe.getId() == employeId);
     }
 

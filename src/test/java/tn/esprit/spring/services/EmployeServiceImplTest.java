@@ -261,11 +261,18 @@ class EmployeServiceImplTest {
 
     @Test
     void testDesaffecterEmployeDuDepartement_EmployeNotInDepartement() {
-        when(deptRepoistory.findById(1)).thenReturn(Optional.of(departement));
+
+        // Create an employee instance
+        Employe employeTemp = new Employe();
+        employeTemp.setId(2); // Set the ID to 2
+
+        // Create a department instance and add the employee to it
+        Departement departementTemp = new Departement();
+        departementTemp.setId(1); // Set the department ID
+        departementTemp.setEmployes(new ArrayList<>(List.of(employeTemp))); // Add the employee to the department
+        when(deptRepoistory.findById(1)).thenReturn(Optional.of(departementTemp));
 
         // Ensure that the department does not contain the employee
-        departement.setEmployes(new ArrayList<>());
-
         employeService.desaffecterEmployeDuDepartement(1, 1);
 
         assertFalse(departement.getEmployes().contains(employe));
@@ -293,5 +300,105 @@ class EmployeServiceImplTest {
         assertEquals("Contrat not found with id: 100", exception.getMessage());
     }
 
+    @Test
+    void testAffecterEmployeADepartement_EmployeNotFound() {
+        when(deptRepoistory.findById(1)).thenReturn(Optional.of(departement));
+        when(employeRepository.findById(1)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            employeService.affecterEmployeADepartement(1, 1);
+        });
+
+        assertEquals("Employe not found with id: 1", exception.getMessage());
+    }
+
+
+    @Test
+    void testDesaffecterEmployeDuDepartement_DepartementNotFound() {
+        when(deptRepoistory.findById(1)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            employeService.desaffecterEmployeDuDepartement(1, 1);
+        });
+
+        assertEquals("Departement not found with id: 1", exception.getMessage());
+    }
+
+    @Test
+    void testGetEmployePrenomById_EmployeNotFound() {
+        when(employeRepository.findById(1)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            employeService.getEmployePrenomById(1);
+        });
+
+        assertEquals("Employe not found with id: 1", exception.getMessage());
+    }
+
+    @Test
+    void testDesaffecterEmployeDuDepartement_EmployeExists() {
+        // Setup
+        Employe employeTemp = new Employe();
+        employeTemp.setId(1);
+
+        Departement departementTemp = new Departement();
+        departementTemp.setEmployes(new ArrayList<>(List.of(employeTemp))); // Add the employee to the department
+
+        when(deptRepoistory.findById(1)).thenReturn(Optional.of(departementTemp));
+
+        // Act
+        employeService.desaffecterEmployeDuDepartement(1, 1);
+
+        // Assert
+        assertFalse(departement.getEmployes().contains(employe), "Employee should be removed from the department");
+    }
+
+    @Test
+    void testDesaffecterEmployeDuDepartement_EmployeExistsAndRemoved() {
+        // Create an employee instance
+        Employe employeTemp = new Employe();
+        employeTemp.setId(1); // Set the ID to 1
+
+        // Create a department instance and add the employee to it
+        Departement departementTemp = new Departement();
+        departementTemp.setId(1); // Set the department ID
+        departementTemp.setEmployes(new ArrayList<>(List.of(employeTemp))); // Add the employee to the department
+
+        // Mock the repository behavior
+        when(deptRepoistory.findById(1)).thenReturn(Optional.of(departementTemp)); // Department exists
+//        when(employeRepository.findById(1)).thenReturn(Optional.of(employe)); // Employee exists
+
+        // Act
+        employeService.desaffecterEmployeDuDepartement(1, 1); // Attempt to remove the employee from the department
+
+        // Assert
+        assertFalse(departement.getEmployes().contains(employe), "Employee should be removed from the department");
+    }
+
+
+    @Test
+    void testAffecterContratAEmploye_ContratNotFound() {
+        when(contratRepoistory.findById(1)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            employeService.affecterContratAEmploye(1, 1);
+        });
+
+        assertEquals("Contrat not found with id: 1", exception.getMessage());
+    }
+
+    @Test
+    void testAffecterContratAEmploye_EmployeNotFound() {
+        Contrat contratTemp = new Contrat();
+
+        when(contratRepoistory.findById(1)).thenReturn(Optional.of(contratTemp));
+        when(employeRepository.findById(1)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            employeService.affecterContratAEmploye(1, 1);
+        });
+
+        assertEquals("Employe not found with id: 1", exception.getMessage());
+    }
 
 }
