@@ -1,4 +1,4 @@
-package dto;
+package tn.esprit.spring.dto;
 
 import org.junit.jupiter.api.Test;
 import tn.esprit.spring.dto.EmployeDTO;
