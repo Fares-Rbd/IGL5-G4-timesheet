@@ -29,3 +29,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+terraform/.terraform.lock.hcl
+terraform/.terraform/
