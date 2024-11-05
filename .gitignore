@@ -34,3 +34,6 @@ build/
 .mvn/
 mvnw
 mvnw.cmd
+
+terraform/.terraform.lock.hcl
+terraform/.terraform/
