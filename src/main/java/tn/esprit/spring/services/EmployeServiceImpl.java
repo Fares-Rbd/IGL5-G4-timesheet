@@ -21,136 +21,139 @@ import tn.esprit.spring.repository.TimesheetRepository;
 @Service
 public class EmployeServiceImpl implements IEmployeService {
 
-	private final EmployeRepository employeRepository;
-	private final DepartementRepository deptRepoistory;
-	private final ContratRepository contratRepoistory;
-	private final TimesheetRepository timesheetRepository;
+    private static final String EMPLOYE_NOT_FOUND = "Employe not found with id: ";
+    private final EmployeRepository employeRepository;
+    private final DepartementRepository deptRepoistory;
+    private final ContratRepository contratRepoistory;
+    private final TimesheetRepository timesheetRepository;
 
-	private static final String EMPLOYE_NOT_FOUND = "Employe not found with id: ";
+    @Autowired
+    public EmployeServiceImpl(EmployeRepository employeRepository, DepartementRepository deptRepoistory, ContratRepository contratRepoistory, TimesheetRepository timesheetRepository) {
+        this.employeRepository = employeRepository;
+        this.deptRepoistory = deptRepoistory;
+        this.contratRepoistory = contratRepoistory;
+        this.timesheetRepository = timesheetRepository;
+    }
 
-	@Autowired
-	public EmployeServiceImpl(EmployeRepository employeRepository, DepartementRepository deptRepoistory, ContratRepository contratRepoistory, TimesheetRepository timesheetRepository) {
-		this.employeRepository = employeRepository;
-		this.deptRepoistory = deptRepoistory;
-		this.contratRepoistory = contratRepoistory;
-		this.timesheetRepository = timesheetRepository;
-	}
+    @Override
+    public Employe authenticate(String login, String password) {
+        return employeRepository.getEmployeByEmailAndPassword(login, password);
+    }
 
-	@Override
-	public Employe authenticate(String login, String password) {
-		return employeRepository.getEmployeByEmailAndPassword(login, password);
-	}
-
-	@Override
-	public int addOrUpdateEmploye(Employe employe) {
-		employeRepository.save(employe);
-		return employe.getId();
-	}
+    @Override
+    public int addOrUpdateEmploye(Employe employe) {
+        employeRepository.save(employe);
+        return employe.getId();
+    }
 
 
-	public void mettreAjourEmailByEmployeId(String email, int employeId) {
-		employeRepository.findById(employeId).ifPresent(employe -> {
-			employe.setEmail(email);
-			employeRepository.save(employe);
-		});
-	}
+    public void mettreAjourEmailByEmployeId(String email, int employeId) {
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Email must not be null or empty");
+        }
+        Employe employe = employeRepository.findById(employeId)
+                .orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
+        employe.setEmail(email);
+        employeRepository.save(employe);
 
-	@Transactional    
-	public void affecterEmployeADepartement(int employeId, int depId) {
-		Departement depManagedEntity = deptRepoistory.findById(depId)
-			.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
-		Employe employeManagedEntity = employeRepository.findById(employeId)
-			.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
+    }
 
-		depManagedEntity.getEmployes().add(employeManagedEntity);
-	}
+    @Transactional
+    public void affecterEmployeADepartement(int employeId, int depId) {
+        Departement depManagedEntity = deptRepoistory.findById(depId)
+                .orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
+        Employe employeManagedEntity = employeRepository.findById(employeId)
+                .orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
 
-	@Transactional
-	public void desaffecterEmployeDuDepartement(int employeId, int depId) {
-		Departement dep = deptRepoistory.findById(depId)
-			.orElseThrow(() -> new RuntimeException("Departement not found with id: " + depId));
-		
-		dep.getEmployes().removeIf(employe -> employe.getId() == employeId);
-	}
+        depManagedEntity.getEmployes().add(employeManagedEntity);
+    }
 
-	public int ajouterContrat(Contrat contrat) {
-		contratRepoistory.save(contrat);
-		return contrat.getReference();
-	}
+    @Transactional
+    public void desaffecterEmployeDuDepartement(int employeId, int depId) {
+        Departement dep = deptRepoistory.findById(depId)
+                .orElseThrow(() -> new RuntimeException("Departement not found with id: " + depId));
 
-	public void affecterContratAEmploye(int contratId, int employeId) {
-		Contrat contratManagedEntity = contratRepoistory.findById(contratId)
-			.orElseThrow(() -> new RuntimeException("Contrat not found with id: " + contratId));
-		Employe employeManagedEntity = employeRepository.findById(employeId)
-			.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
+        dep.getEmployes().removeIf(employe -> employe.getId() == employeId);
+    }
 
-		contratManagedEntity.setEmploye(employeManagedEntity);
-		contratRepoistory.save(contratManagedEntity);
-	}
+    public int ajouterContrat(Contrat contrat) {
+        contratRepoistory.save(contrat);
+        return contrat.getReference();
+    }
 
-	public String getEmployePrenomById(int employeId) {
-		return employeRepository.findById(employeId)
-			.map(Employe::getPrenom)
-			.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
-	}
+    public void affecterContratAEmploye(int contratId, int employeId) {
+        Contrat contratManagedEntity = contratRepoistory.findById(contratId)
+                .orElseThrow(() -> new RuntimeException("Contrat not found with id: " + contratId));
+        Employe employeManagedEntity = employeRepository.findById(employeId)
+                .orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
 
-	public void deleteEmployeById(int employeId)
-	{
-		 Employe employe = employeRepository.findById(employeId)
-		.orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
+        contratManagedEntity.setEmploye(employeManagedEntity);
+        contratRepoistory.save(contratManagedEntity);
+    }
 
-    	//Desaffecter l'employe de tous les departements
-		//c'est le bout master qui permet de mettre a jour
-		//la table d'association
-		for(Departement dep : employe.getDepartements()){
-			dep.getEmployes().remove(employe);
-		}
+    public String getEmployePrenomById(int employeId) {
+        return employeRepository.findById(employeId)
+                .map(Employe::getPrenom)
+                .orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
+    }
 
-		employeRepository.delete(employe);
-	}
+    public void deleteEmployeById(int employeId) {
+        Employe employe = employeRepository.findById(employeId)
+                .orElseThrow(() -> new RuntimeException(EMPLOYE_NOT_FOUND + employeId));
 
-	public void deleteContratById(int contratId) {
-		Contrat contratManagedEntity = contratRepoistory.findById(contratId)
-			.orElseThrow(() -> new RuntimeException("Contrat not found with id: " + contratId));
-		contratRepoistory.delete(contratManagedEntity);
-	}
+        //Desaffecter l'employe de tous les departements
+        //c'est le bout master qui permet de mettre a jour
+        //la table d'association
+        for (Departement dep : employe.getDepartements()) {
+            dep.getEmployes().remove(employe);
+        }
 
-	public int getNombreEmployeJPQL() {
-		return employeRepository.countemp();
-	}
+        employeRepository.delete(employe);
+    }
 
-	public List<String> getAllEmployeNamesJPQL() {
-		return employeRepository.employeNames();
+    public void deleteContratById(int contratId) {
+        Contrat contratManagedEntity = contratRepoistory.findById(contratId)
+                .orElseThrow(() -> new RuntimeException("Contrat not found with id: " + contratId));
+        contratRepoistory.delete(contratManagedEntity);
+    }
 
-	}
+    public int getNombreEmployeJPQL() {
+        return employeRepository.countemp();
+    }
 
-	public List<Employe> getAllEmployeByEntreprise(Entreprise entreprise) {
-		return employeRepository.getAllEmployeByEntreprisec(entreprise);
-	}
+    public List<String> getAllEmployeNamesJPQL() {
+        return employeRepository.employeNames();
 
-	public void mettreAjourEmailByEmployeIdJPQL(String email, int employeId) {
-		employeRepository.mettreAjourEmailByEmployeIdJPQL(email, employeId);
+    }
 
-	}
-	public void deleteAllContratJPQL() {
-		employeRepository.deleteAllContratJPQL();
-	}
+    public List<Employe> getAllEmployeByEntreprise(Entreprise entreprise) {
+        return employeRepository.getAllEmployeByEntreprisec(entreprise);
+    }
 
-	public float getSalaireByEmployeIdJPQL(int employeId) {
-		return employeRepository.getSalaireByEmployeIdJPQL(employeId);
-	}
+    public void mettreAjourEmailByEmployeIdJPQL(String email, int employeId) {
+        employeRepository.mettreAjourEmailByEmployeIdJPQL(email, employeId);
 
-	public Double getSalaireMoyenByDepartementId(int departementId) {
-		return employeRepository.getSalaireMoyenByDepartementId(departementId);
-	}
+    }
 
-	public List<Timesheet> getTimesheetsByMissionAndDate(Employe employe, Mission mission, Date dateDebut,
-			Date dateFin) {
-		return timesheetRepository.getTimesheetsByMissionAndDate(employe, mission, dateDebut, dateFin);
-	}
+    public void deleteAllContratJPQL() {
+        employeRepository.deleteAllContratJPQL();
+    }
 
-	public List<Employe> getAllEmployes() {
-		return (List<Employe>) employeRepository.findAll();
-	}
+    public float getSalaireByEmployeIdJPQL(int employeId) {
+        return employeRepository.getSalaireByEmployeIdJPQL(employeId);
+    }
+
+    public Double getSalaireMoyenByDepartementId(int departementId) {
+        return employeRepository.getSalaireMoyenByDepartementId(departementId);
+    }
+
+    public List<Timesheet> getTimesheetsByMissionAndDate(Employe employe, Mission mission, Date dateDebut,
+                                                         Date dateFin) {
+        return timesheetRepository.getTimesheetsByMissionAndDate(employe, mission, dateDebut, dateFin);
+    }
+
+    public List<Employe> getAllEmployes() {
+        return (List<Employe>) employeRepository.findAll();
+    }
 
 }

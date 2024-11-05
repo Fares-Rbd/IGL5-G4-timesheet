@@ -43,7 +43,7 @@ class EmployeServiceImplTest {
     private Contrat contrat;
 
     @BeforeEach
-     void setUp() {
+    void setUp() {
         employe = new Employe(1, "John", "Doe", "john.doe@example.com", "password", true, Role.INGENIEUR);
         departement = new Departement("Engineering");
         departement.setId(1);
@@ -52,7 +52,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testAuthenticate() {
+    void testAuthenticate() {
         when(employeRepository.getEmployeByEmailAndPassword("john.doe@example.com", "password")).thenReturn(employe);
 
         Employe result = employeService.authenticate("john.doe@example.com", "password");
@@ -62,7 +62,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testAddOrUpdateEmploye() {
+    void testAddOrUpdateEmploye() {
         when(employeRepository.save(employe)).thenReturn(employe);
 
         int result = employeService.addOrUpdateEmploye(employe);
@@ -72,7 +72,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testMettreAjourEmailByEmployeId() {
+    void testMettreAjourEmailByEmployeId() {
         when(employeRepository.findById(1)).thenReturn(Optional.of(employe));
 
         employeService.mettreAjourEmailByEmployeId("new.email@example.com", 1);
@@ -82,7 +82,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testAffecterEmployeADepartement() {
+    void testAffecterEmployeADepartement() {
         when(deptRepoistory.findById(1)).thenReturn(Optional.of(departement));
         when(employeRepository.findById(1)).thenReturn(Optional.of(employe));
 
@@ -94,7 +94,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testDesaffecterEmployeDuDepartement() {
+    void testDesaffecterEmployeDuDepartement() {
         // Use ArrayList to allow modifications
         departement.setEmployes(new ArrayList<>(Arrays.asList(employe)));
         when(deptRepoistory.findById(1)).thenReturn(Optional.of(departement));
@@ -106,7 +106,7 @@ class EmployeServiceImplTest {
 
 
     @Test
-     void testAjouterContrat() {
+    void testAjouterContrat() {
         when(contratRepoistory.save(contrat)).thenReturn(contrat);
 
         int result = employeService.ajouterContrat(contrat);
@@ -116,7 +116,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testAffecterContratAEmploye() {
+    void testAffecterContratAEmploye() {
         when(contratRepoistory.findById(100)).thenReturn(Optional.of(contrat));
         when(employeRepository.findById(1)).thenReturn(Optional.of(employe));
 
@@ -127,7 +127,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testGetEmployePrenomById() {
+    void testGetEmployePrenomById() {
         when(employeRepository.findById(1)).thenReturn(Optional.of(employe));
 
         String result = employeService.getEmployePrenomById(1);
@@ -136,7 +136,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testDeleteEmployeById() {
+    void testDeleteEmployeById() {
         employe.setDepartements(Arrays.asList(departement));
         when(employeRepository.findById(1)).thenReturn(Optional.of(employe));
 
@@ -147,7 +147,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testDeleteContratById() {
+    void testDeleteContratById() {
         when(contratRepoistory.findById(100)).thenReturn(Optional.of(contrat));
 
         employeService.deleteContratById(100);
@@ -156,7 +156,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testGetNombreEmployeJPQL() {
+    void testGetNombreEmployeJPQL() {
         when(employeRepository.countemp()).thenReturn(5);
 
         int result = employeService.getNombreEmployeJPQL();
@@ -165,7 +165,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testGetAllEmployeNamesJPQL() {
+    void testGetAllEmployeNamesJPQL() {
         when(employeRepository.employeNames()).thenReturn(Arrays.asList("John Doe", "Jane Doe"));
 
         List<String> result = employeService.getAllEmployeNamesJPQL();
@@ -176,7 +176,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testGetAllEmployeByEntreprise() {
+    void testGetAllEmployeByEntreprise() {
         Entreprise entreprise = new Entreprise();
         when(employeRepository.getAllEmployeByEntreprisec(entreprise)).thenReturn(Arrays.asList(employe));
 
@@ -187,19 +187,19 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testMettreAjourEmailByEmployeIdJPQL() {
+    void testMettreAjourEmailByEmployeIdJPQL() {
         employeService.mettreAjourEmailByEmployeIdJPQL("new.email@example.com", 1);
         verify(employeRepository).mettreAjourEmailByEmployeIdJPQL("new.email@example.com", 1);
     }
 
     @Test
-     void testDeleteAllContratJPQL() {
+    void testDeleteAllContratJPQL() {
         employeService.deleteAllContratJPQL();
         verify(employeRepository).deleteAllContratJPQL();
     }
 
     @Test
-     void testGetSalaireByEmployeIdJPQL() {
+    void testGetSalaireByEmployeIdJPQL() {
         when(employeRepository.getSalaireByEmployeIdJPQL(1)).thenReturn(3000f);
 
         float result = employeService.getSalaireByEmployeIdJPQL(1);
@@ -208,7 +208,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testGetSalaireMoyenByDepartementId() {
+    void testGetSalaireMoyenByDepartementId() {
         when(employeRepository.getSalaireMoyenByDepartementId(1)).thenReturn(2500.0);
 
         Double result = employeService.getSalaireMoyenByDepartementId(1);
@@ -217,7 +217,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testGetTimesheetsByMissionAndDate() {
+    void testGetTimesheetsByMissionAndDate() {
         Mission mission = new Mission();
         List<Timesheet> timesheets = Arrays.asList(new Timesheet());
         when(timesheetRepository.getTimesheetsByMissionAndDate(employe, mission, null, null)).thenReturn(timesheets);
@@ -228,7 +228,7 @@ class EmployeServiceImplTest {
     }
 
     @Test
-     void testGetAllEmployes() {
+    void testGetAllEmployes() {
         when(employeRepository.findAll()).thenReturn(Arrays.asList(employe));
 
         List<Employe> result = employeService.getAllEmployes();
@@ -236,4 +236,62 @@ class EmployeServiceImplTest {
         assertEquals(1, result.size());
         assertEquals(employe, result.get(0));
     }
+
+    @Test
+    void testMettreAjourEmailByEmployeId_EmployeNotFound() {
+        when(employeRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            employeService.mettreAjourEmailByEmployeId("new.email@example.com", 1);
+        });
+
+        assertEquals("Employe not found with id: 1", exception.getMessage());
+    }
+
+    @Test
+    void testAffecterEmployeADepartement_DepartementNotFound() {
+        when(deptRepoistory.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            employeService.affecterEmployeADepartement(1, 1);
+        });
+
+        assertEquals("Employe not found with id: 1", exception.getMessage());
+    }
+
+    @Test
+    void testDesaffecterEmployeDuDepartement_EmployeNotInDepartement() {
+        when(deptRepoistory.findById(1)).thenReturn(Optional.of(departement));
+
+        // Ensure that the department does not contain the employee
+        departement.setEmployes(new ArrayList<>());
+
+        employeService.desaffecterEmployeDuDepartement(1, 1);
+
+        assertFalse(departement.getEmployes().contains(employe));
+    }
+
+    @Test
+    void testDeleteEmployeById_EmployeNotFound() {
+        when(employeRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            employeService.deleteEmployeById(1);
+        });
+
+        assertEquals("Employe not found with id: 1", exception.getMessage());
+    }
+
+    @Test
+    void testDeleteContratById_ContratNotFound() {
+        when(contratRepoistory.findById(100)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            employeService.deleteContratById(100);
+        });
+
+        assertEquals("Contrat not found with id: 100", exception.getMessage());
+    }
+
+
 }

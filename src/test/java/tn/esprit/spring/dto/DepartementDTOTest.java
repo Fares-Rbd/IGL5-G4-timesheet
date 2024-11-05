@@ -1,7 +1,6 @@
 package tn.esprit.spring.dto;
 
 import org.junit.jupiter.api.Test;
-import tn.esprit.spring.dto.DepartementDTO;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
