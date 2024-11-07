@@ -29,3 +29,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore Terraform lock files and state files
+terraform/.terraform.lock.hcl
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+
