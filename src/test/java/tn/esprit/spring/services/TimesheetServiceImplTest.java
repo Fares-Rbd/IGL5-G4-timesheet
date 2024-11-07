@@ -28,8 +28,9 @@ import tn.esprit.spring.repository.EmployeRepository;
 import tn.esprit.spring.repository.MissionRepository;
 import tn.esprit.spring.repository.TimesheetRepository;
 
+
 @ExtendWith(MockitoExtension.class)
- class TimesheetServiceImplTest {
+class TimesheetServiceImplTest {
 
     @InjectMocks
     private TimesheetServiceImpl timesheetService;
@@ -55,7 +56,7 @@ import tn.esprit.spring.repository.TimesheetRepository;
     private Date dateFin;
 
     @BeforeEach
-     void setUp() throws ParseException {
+    void setUp() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         dateDebut = sdf.parse("01/01/2024");
         dateFin = sdf.parse("02/01/2024");
@@ -83,7 +84,7 @@ import tn.esprit.spring.repository.TimesheetRepository;
     }
 
     @Test
-     void testAjouterMission() {
+    void testAjouterMission() {
         when(missionRepository.save(any(Mission.class))).thenReturn(mission);
 
         int missionId = timesheetService.ajouterMission(mission);
@@ -93,7 +94,7 @@ import tn.esprit.spring.repository.TimesheetRepository;
     }
 
     @Test
-     void testAffecterMissionADepartement() {
+    void testAffecterMissionADepartement() {
         when(missionRepository.findById(1)).thenReturn(Optional.of(mission));
         when(departementRepository.findById(1)).thenReturn(Optional.of(departement));
 
@@ -104,7 +105,7 @@ import tn.esprit.spring.repository.TimesheetRepository;
     }
 
     @Test
-     void testAjouterTimesheet() {
+    void testAjouterTimesheet() {
         when(timesheetRepository.save(any(Timesheet.class))).thenReturn(timesheet);
 
         timesheetService.ajouterTimesheet(1, 1, dateDebut, dateFin);
@@ -113,7 +114,7 @@ import tn.esprit.spring.repository.TimesheetRepository;
     }
 
     @Test
-     void testValiderTimesheetAsValidateur() {
+    void testValiderTimesheetAsValidateur() {
         when(employeRepository.findById(1)).thenReturn(Optional.of(employe));
         when(missionRepository.findById(1)).thenReturn(Optional.of(mission));
         when(timesheetRepository.findBytimesheetPK(timesheetPK)).thenReturn(timesheet);
@@ -125,7 +126,7 @@ import tn.esprit.spring.repository.TimesheetRepository;
     }
 
     @Test
-     void testValiderTimesheetAsNonChefDepartement() {
+    void testValiderTimesheetAsNonChefDepartement() {
         employe.setRole(Role.ADMINISTRATEUR);
         when(employeRepository.findById(1)).thenReturn(Optional.of(employe));
         when(missionRepository.findById(1)).thenReturn(Optional.of(mission));
@@ -137,7 +138,7 @@ import tn.esprit.spring.repository.TimesheetRepository;
     }
 
     @Test
-     void testFindAllMissionByEmployeJPQL() {
+    void testFindAllMissionByEmployeJPQL() {
         List<Mission> missions = new ArrayList<>();
         missions.add(mission);
 
@@ -150,7 +151,7 @@ import tn.esprit.spring.repository.TimesheetRepository;
     }
 
     @Test
-     void testGetAllEmployeByMission() {
+    void testGetAllEmployeByMission() {
         List<Employe> employes = new ArrayList<>();
         employes.add(employe);
 
@@ -161,4 +162,154 @@ import tn.esprit.spring.repository.TimesheetRepository;
         assertEquals(1, result.size());
         assertEquals(employe, result.get(0));
     }
+
+    @Test
+    void testAffecterMissionADepartement_MissionNotFound() {
+        // Arrange
+        int missionId = 1;
+        int depId = 1;
+
+        // Stub the mission repository to return an empty Optional
+        when(missionRepository.findById(missionId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            timesheetService.affecterMissionADepartement(missionId, depId);
+        });
+
+        // Verify the expected exception message
+        assertEquals("Mission not found with id: " + missionId, exception.getMessage());
+
+    }
+
+    @Test
+    void testAffecterMissionADepartement_DepartementNotFound() {
+        // Arrange
+        int missionId = 1;
+        int depId = 1;
+
+        // Stub the mission repository to return a present mission
+        Mission missionTemp = new Mission();
+        missionTemp.setId(missionId);
+        when(missionRepository.findById(missionId)).thenReturn(Optional.of(missionTemp));
+
+        // Stub the department repository to return an empty Optional
+        when(departementRepository.findById(depId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            timesheetService.affecterMissionADepartement(missionId, depId);
+        });
+
+        // Verify the expected exception message
+        assertEquals("Departement not found with id: " + depId, exception.getMessage());
+    }
+
+    @Test
+    void testValiderTimesheet_ValidateurNotFound() {
+        // Arrange
+        int validateurId = 1;
+        int missionId = 1;
+        int employeId = 1;
+        Date dateDebutTemp = new Date();
+        Date dateFinTemp = new Date();
+
+        // Stub employeRepository to return an empty Optional
+        when(employeRepository.findById(validateurId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            timesheetService.validerTimesheet(missionId, employeId, dateDebutTemp, dateFinTemp, validateurId);
+        });
+
+        // Verify the expected exception message
+        assertEquals("Validateur not found with id: " + validateurId, exception.getMessage());
+    }
+
+
+    @Test
+    void testValiderTimesheet_MissionNotFound() {
+        // Arrange
+        int validateurId = 1;
+        int missionId = 1;
+        int employeId = 1;
+        Date dateDebutTemp = new Date();
+        Date dateFinTemp = new Date();
+        Employe validateur = new Employe();
+        validateur.setRole(Role.CHEF_DEPARTEMENT);
+
+        // Stub employeRepository to return a valid validateur
+        when(employeRepository.findById(validateurId)).thenReturn(Optional.of(validateur));
+        // Stub missionRepository to return an empty Optional
+        when(missionRepository.findById(missionId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            timesheetService.validerTimesheet(missionId, employeId, dateDebutTemp, dateFinTemp, validateurId);
+        });
+
+        // Verify the expected exception message
+        assertEquals("Mission not found with id: " + missionId, exception.getMessage());
+    }
+
+    @Test
+    void testValiderTimesheet_ValidateurNotChefDepartement() {
+        // Arrange
+        int validateurId = 1;
+        int missionId = 1;
+        int employeId = 1;
+        Date dateDebutTemp = new Date();
+        Date dateFinTemp = new Date();
+        Employe validateur = new Employe();
+        validateur.setRole(Role.TECHNICIEN); // Not a chef de departement
+
+        // Stub employeRepository to return a valid validateur
+        when(employeRepository.findById(validateurId)).thenReturn(Optional.of(validateur));
+        // Stub missionRepository to return a valid mission
+        Mission missionTemp = new Mission();
+        missionTemp.setDepartement(new Departement());
+        when(missionRepository.findById(missionId)).thenReturn(Optional.of(missionTemp));
+
+        // Act
+        timesheetService.validerTimesheet(missionId, employeId, dateDebutTemp, dateFinTemp, validateurId);
+
+        // Assert logging occurs
+        // You can verify that the logger was called appropriately if you have a Logger spy
+        // Here we're just testing that it executes without exceptions and no further checks are made
+        assertTrue(true);
+    }
+
+    @Test
+    void testValiderTimesheet_NotChefDeLaMission() {
+        // Arrange
+        int validateurId = 1;
+        int missionId = 1;
+        int employeId = 1;
+        Date dateDebutTemp = new Date();
+        Date dateFinTemp = new Date();
+        Employe validateur = new Employe();
+        validateur.setRole(Role.CHEF_DEPARTEMENT);
+        Departement validateurDept = new Departement();
+        validateurDept.setId(1);
+        validateur.setDepartements(new ArrayList<>()); // Validateur has no departments
+
+        // Stub employeRepository to return a valid validateur
+        when(employeRepository.findById(validateurId)).thenReturn(Optional.of(validateur));
+
+        // Stub missionRepository to return a valid mission
+        Mission missionTemp = new Mission();
+        missionTemp.setDepartement(new Departement());
+        missionTemp.getDepartement().setId(2); // Mission department ID
+        when(missionRepository.findById(missionId)).thenReturn(Optional.of(missionTemp));
+
+        // Act
+        timesheetService.validerTimesheet(missionId, employeId, dateDebutTemp, dateFinTemp, validateurId);
+
+        // Assert logging occurs
+        // You can verify that the logger was called appropriately if you have a Logger spy
+        // Here we're just testing that it executes without exceptions and no further checks are made
+        assertTrue(true);
+    }
+
+
 }

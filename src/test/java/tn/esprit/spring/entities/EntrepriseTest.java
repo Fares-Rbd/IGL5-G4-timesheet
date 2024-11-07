@@ -5,47 +5,45 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tn.esprit.spring.entities.Departement;
-import tn.esprit.spring.entities.Entreprise;
 
-public class EntrepriseTest {
+class EntrepriseTest {
 
     private Entreprise entreprise;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         // This will run before each test case
         entreprise = new Entreprise("ABC Corp", "SA");
     }
 
     // 1. Test entity creation with parameters
     @Test
-    public void testEntrepriseCreation() {
+    void testEntrepriseCreation() {
         assertEquals("ABC Corp", entreprise.getName());
         assertEquals("SA", entreprise.getRaisonSocial());
     }
 
     // 2. Test default constructor
     @Test
-    public void testDefaultConstructor() {
+    void testDefaultConstructor() {
         Entreprise defaultEntreprise = new Entreprise();
         assertNotNull(defaultEntreprise);
     }
 
     // 3. Test getters and setters
     @Test
-    public void testGettersAndSetters() {
-        Entreprise entreprise = new Entreprise();
-        entreprise.setName("XYZ Inc");
-        entreprise.setRaisonSocial("SARL");
+    void testGettersAndSetters() {
+        Entreprise tempEntreprise = new Entreprise();
+        tempEntreprise.setName("XYZ Inc");
+        tempEntreprise.setRaisonSocial("SARL");
 
-        assertEquals("XYZ Inc", entreprise.getName());
-        assertEquals("SARL", entreprise.getRaisonSocial());
+        assertEquals("XYZ Inc", tempEntreprise.getName());
+        assertEquals("SARL", tempEntreprise.getRaisonSocial());
     }
 
     // 4. Test adding a Departement to the Entreprise
     @Test
-    public void testAddDepartement() {
+    void testAddDepartement() {
         Departement departement = new Departement();
         entreprise.addDepartement(departement);
 
@@ -55,15 +53,15 @@ public class EntrepriseTest {
 
     // 5. Test departement list initialization
     @Test
-    public void testDepartementListInitialization() {
-        Entreprise entreprise = new Entreprise("ABC Corp", "SA");
-        assertNotNull(entreprise.getDepartements());
-        assertTrue(entreprise.getDepartements().isEmpty());
+    void testDepartementListInitialization() {
+        Entreprise tempEntreprise = new Entreprise("ABC Corp", "SA");
+        assertNotNull(tempEntreprise.getDepartements());
+        assertTrue(tempEntreprise.getDepartements().isEmpty());
     }
 
     // 6. Test setting the departements list
     @Test
-    public void testSetDepartements() {
+    void testSetDepartements() {
         List<Departement> departements = new ArrayList<>();
         Departement dep1 = new Departement();
         departements.add(dep1);
@@ -76,18 +74,18 @@ public class EntrepriseTest {
 
     // 7. Test null values for name and raisonSocial
     @Test
-    public void testNullNameOrRaisonSocial() {
-        Entreprise entreprise = new Entreprise();
-        entreprise.setName(null);
-        entreprise.setRaisonSocial(null);
+    void testNullNameOrRaisonSocial() {
+        Entreprise tempEntreprise = new Entreprise();
+        tempEntreprise.setName(null);
+        tempEntreprise.setRaisonSocial(null);
 
-        assertNull(entreprise.getName());
-        assertNull(entreprise.getRaisonSocial());
+        assertNull(tempEntreprise.getName());
+        assertNull(tempEntreprise.getRaisonSocial());
     }
 
     // 8. Test updating the name and raisonSocial after creation
     @Test
-    public void testUpdateEntrepriseDetails() {
+    void testUpdateEntrepriseDetails() {
         entreprise.setName("New Corp");
         entreprise.setRaisonSocial("New SARL");
 
