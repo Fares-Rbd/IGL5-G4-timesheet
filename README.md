@@ -1,3 +1,3 @@
 Project for DevOps class.
 Another test for webhooks.
-this is for RELEASE webhook test.
+this is for SNAPSHOT webhook test.
